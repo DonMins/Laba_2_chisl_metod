@@ -14,11 +14,15 @@ while x<=b:
     x+=0.01
     n+=1
 
+
+
+
 #xarr = [i for i in range(300)] # 7 вариант
 xarr = [i for i in range(301)] # 12 вариант
 plt.figure("График какой то функции")
 plt.plot(xarr,Tatulated)
 plt.grid()
+
 plt.show()
 
 
