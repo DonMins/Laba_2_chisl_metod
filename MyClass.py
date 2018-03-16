@@ -2,6 +2,7 @@ import math as np
 import matplotlib.pyplot as plt
 Tatulated  = []
 a=0
+
 b=3
 #=a+0.01 # 7 вариант
 x=a      # 12 вариант
