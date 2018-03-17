@@ -49,7 +49,6 @@ def interpolPolynomNewton(x):
     return Tatulated[0] + f1(0)*(x-xarr[0])+f2(0)*(x-xarr[0])*(x-xarr[1])+\
            f3(0)*(x-xarr[0])*(x-xarr[1])*(x-xarr[2])
 
-
 if __name__ == "__main__":
     tabalatedFunc(0,3,1)
     print(Tatulated)
