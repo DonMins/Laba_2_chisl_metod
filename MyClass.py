@@ -38,9 +38,27 @@ def interpolPolynom(x):
     a = alpha()
     return a[0]+a[1]*x+a[2]*x**2+a[3]*x**3
 
+def f1(i):
+    return (Tatulated[i+1] - Tatulated[i])/(xarr[i+1]-xarr[i])
+def f2(i):
+    return  (f1(i+1) - f1(i))/(xarr[i+2]-xarr[i])
+def f3(i):
+    return ((f2(i+1) - f2(i)) / xarr[i+3] - xarr[i])
+
+def interpolPolynomNewton(x):
+    return Tatulated[0] + f1(0)*(x-xarr[0])+f2(0)*(x-xarr[0])*(x-xarr[1])+\
+           f3(0)*(x-xarr[0])*(x-xarr[1])*(x-xarr[2])
+
+
 if __name__ == "__main__":
     tabalatedFunc(0,3,1)
     print(Tatulated)
     print(xarr)
+
+    tmp = 2.5
     ans = interpolPolynom(1)
-    print(ans)
+    print("Интерполяционный многочлен Лагранже в ", tmp, " =", float(interpolPolynom(tmp)))
+
+
+    tmp = 2.5
+    print("Интерполяционный многочлен Ньютона в  ", tmp," =", interpolPolynomNewton(tmp))
