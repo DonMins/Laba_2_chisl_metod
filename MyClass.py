@@ -16,6 +16,7 @@ while x<=b:
 #xarr = [i for i in range(300)] # 7 вариант
 xarr = [i for i in range(301)] # 12 вариант
 plt.figure("График какой то функции пр4546")
+
 plt.plot(xarr,Tatulated)
 plt.grid()
 plt.show()
