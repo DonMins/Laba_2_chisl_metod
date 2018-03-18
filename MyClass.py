@@ -39,11 +39,6 @@ def plot():
     plt.grid()
     plt.show()
 
-def  alpha(N):
-
-    return
-
-
 def lagranz(x,y,t):
     z = 0
 
@@ -62,13 +57,6 @@ def lagranz(x,y,t):
 
     return z
 
-def f1(i):
-    return (Tatulated[i+1] - Tatulated[i])/(xarr[i+1]-xarr[i])
-def f2(i):
-    return  (f1(i+1) - f1(i))/(xarr[i+2]-xarr[i])
-def f3(i):
-    return ((f2(i+1) - f2(i)) / xarr[i+3] - xarr[i])
-
 def interpolPolynomNewton(X,x,y,h):
 
     dy0 = y[1]-y[0]
@@ -83,17 +71,35 @@ def interpolPolynomNewton(X,x,y,h):
 
     return y[0] + dy0*((X-x[0])/h) + dy_2*((X-x[0])*(X-x[1]))/(2*h**2)+dy_3*((X-x[0])*(X-x[1])*(X-x[2]))/(6*h**3)
 
-def tablFuncZad2():
-    tablZad2=[]
-    for i in range(4):
-        tablZad2.append(interpolPolynomNewton(i))
-    return tablZad2
+def linearSpline(X,x,y):
+   A = [[x[1]-x[0],0,0],[x[2]-x[0],x[2]-x[1],0],[x[3]-x[0],x[3]-x[1],x[3]-x[2]]]
+   c0 = (y[1]-y[0])/(x[1]-x[0])
+   c1 =((y[2]-y[0]) - ((x[2]-x[0])*c0))/(x[2]-x[1])
+   c2 =((y[3]-y[0]) - ((x[3]-x[0])*c0)-(x[3]-x[1])*c1)/(x[3]-x[2])
+   f = float(y[0]+c0*(X-x[0])+c1*(X-x[1])+c2*(X-x[2]))
+   return f
 
-def linearSpline():
-    y1 = tablFuncZad2()
+def parabolSpline(X,x,y):
+    A = [ [0,2,0,0 ], [x[1]-x[0],(x[1]-x[0])**2,0,0],  [ x[2]-x[0] ,(x[2]-x[0])**2,(x[2]-x[1])**2,0],[ x[3]-x[0] ,(x[3]-x[0])**2,(x[3]-x[1])**2,(x[3]-x[2])**2]]
+    b = numpy.zeros((4, 1))
+    b[0][0]=0
+    for i in range(1,4):
+        b[i][0] = y[i] - y[0]
+    ans = numpy.linalg.solve(A, b)
+    f = float(y[0] + ans[0]*(X-x[0])+ans[1] * (X - x[0])**2 + ans[2] * (X - x[1])**2 + ans[3] * (X - x[2])**2)
+    return f
+
+def cubSpline(X,x,y):
+    A = [ [x[1]-x[0],(x[1]-x[0])**3,0,0], [x[1]-x[0],(x[1]-x[0])**2,0,0],  [ x[2]-x[0] ,(x[2]-x[0])**2,(x[2]-x[1])**2,0],[ x[3]-x[0] ,(x[3]-x[0])**2,(x[3]-x[1])**2,(x[3]-x[2])**2]]
+    b = numpy.zeros((4, 1))
+    b[0][0]=0
+    for i in range(1,4):
+        b[i][0] = y[i] - y[0]
+    ans = numpy.linalg.solve(A, b)
+    f = float(y[0] + ans[0]*(X-x[0])+ans[1] * (X - x[0])**2 + ans[2] * (X - x[1])**2 + ans[3] * (X - x[2])**2)
+    return f
 
 
-    return
 def OutPutTab(M):
     print("       Табуляция функции")
     print("--------------------------------")
@@ -116,17 +122,17 @@ if __name__ == "__main__":
     ynw = [interpolPolynomNewton(X,x,y,0.157) for X in x]
     print("Интерполяционный многочлен Ньютона ", numpy.round(ynw, 5))
 
-    plt.plot(x, y, x, y, 'o', xnew, ynw)
-    plt.grid(True)
+    yn2 = [linearSpline(X, x, y) for X in x]
+    print("Линейный сплайн ", numpy.round((yn2), 5))
+
+    plt.plot(x, yn2)
+
+    # yn3 = [parabolSpline(X, x, y) for X in x]
+    # print("Параболический сплайн ", numpy.round((yn3), 5))
+    # plt.plot(x, y, x, y, 'o', xnew, yn3,xnew,yn2)
+    # plt.grid(True)
     plt.show()
 
-    #
-
-
-    #
-    #
-    # tmp = 2.5
-    # print("Интерполяционный многочлен Ньютона в  ", tmp," =", interpolPolynomNewton(tmp))
 
 
 
