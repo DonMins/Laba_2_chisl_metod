@@ -1,22 +1,22 @@
 import math as np
 import matplotlib.pyplot as plt
 import numpy
+import scipy as sp
 
 Tatulated = []
 xarr = []
-
 
 def inputFunc(x):
     #return 5*x*np.pow((5 * np.pi +2*x),-1/4) # Таня
     return (x / (10 * np.pi * np.sin(x)))
 
-def tabalatedFunc(a, b,h):  # границы [a,b]
+def tabalatedFunc(a, b,h):  # границы [a,b], шаг
     x = 0.00001
     Tatulated.append(inputFunc(x))
     xarr.append(x)
     x = 1
     while x <= b:
-        Tatulated.append(inputFunc(x))  # 7 вариант
+        Tatulated.append(inputFunc(x))
         xarr.append(x)
         x += h
 
@@ -49,6 +49,18 @@ def interpolPolynomNewton(x):
     return Tatulated[0] + f1(0)*(x-xarr[0])+f2(0)*(x-xarr[0])*(x-xarr[1])+\
            f3(0)*(x-xarr[0])*(x-xarr[1])*(x-xarr[2])
 
+def tablFuncZad2():
+    tablZad2=[]
+    for i in range(4):
+        tablZad2.append(interpolPolynomNewton(i))
+    return tablZad2
+
+def linearSpline():
+    y1 = tablFuncZad2()
+
+
+    return
+
 if __name__ == "__main__":
     tabalatedFunc(0,3,1)
     print(Tatulated)
@@ -61,3 +73,6 @@ if __name__ == "__main__":
 
     tmp = 2.5
     print("Интерполяционный многочлен Ньютона в  ", tmp," =", interpolPolynomNewton(tmp))
+
+
+
