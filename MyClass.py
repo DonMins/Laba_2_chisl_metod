@@ -40,25 +40,27 @@ def plot():
     plt.show()
 
 def  alpha(N):
-    a =[[1,xarr[0],xarr[0]**2,xarr[0]**3],[1,xarr[1],xarr[1]**2,xarr[1]**3],
-        [1,xarr[2],xarr[2]**2,xarr[2]**3],[1,xarr[3],xarr[3]**2,xarr[3]**3]]
-    a = numpy.zeros(N,N)
-    for i in range(N):
-        a[i][0] = 1
-    for i in range(N):
-        for j in range(1,N):
-            a[i][j] =
+
+    return
 
 
+def lagranz(x,y,t):
+    z = 0
 
-    b = numpy.zeros((N,1))
-    for i in range(4):
-        b[i][0] = Tatulated[i]
-    return numpy.linalg.solve(a,b)
+    for j in range(len(y)):
+        p1 = 1
+        p2 = 1
+        for i in range(len(x)):
+            if i == j:
+                p1 = p1 * 1
+                p2 = p2 * 1
+            else:
+                p1 = p1 * (t - x[i])
+                p2 = p2 * (x[j] - x[i])
+        z = z + y[j] * p1 / p2
 
-def interpolPolynom(x):
-    a = alpha()
-    return a[0]+a[1]*x+a[2]*x**2+a[3]*x**3
+
+    return z
 
 def f1(i):
     return (Tatulated[i+1] - Tatulated[i])/(xarr[i+1]-xarr[i])
@@ -67,9 +69,19 @@ def f2(i):
 def f3(i):
     return ((f2(i+1) - f2(i)) / xarr[i+3] - xarr[i])
 
-def interpolPolynomNewton(x):
-    return Tatulated[0] + f1(0)*(x-xarr[0])+f2(0)*(x-xarr[0])*(x-xarr[1])+\
-           f3(0)*(x-xarr[0])*(x-xarr[1])*(x-xarr[2])
+def interpolPolynomNewton(X,x,y,h):
+
+    dy0 = y[1]-y[0]
+    dy1 = y[2]-y[1]
+    dy2 = y[3]-y[2]
+
+    dy_2 = dy1 - dy0
+
+    dy1_2 = dy2 - dy1
+
+    dy_3 = dy1_2-dy_2
+
+    return y[0] + dy0*((X-x[0])/h) + dy_2*((X-x[0])*(X-x[1]))/(2*h**2)+dy_3*((X-x[0])*(X-x[1])*(X-x[2]))/(6*h**3)
 
 def tablFuncZad2():
     tablZad2=[]
@@ -92,14 +104,25 @@ def OutPutTab(M):
 if __name__ == "__main__":
     tabalatedFunc(0,3,0.157)
     OutPutTab(19)
-    MaxD4 = MaxDx4Func(3)
+    x=xarr[10:14]
+    y=Tatulated[10:14]
 
+    xnew =numpy.linspace(numpy.min(x), numpy.max(x), 4)
+    ynew = [lagranz(x, y, i) for i in xnew]
+    print("Интерполяционный многочлен Лагранже ", numpy.round(ynew, 5))
+    plt.plot(x, y, x,y,'o', xnew, ynew)
+    plt.grid(True)
 
+    ynw = [interpolPolynomNewton(X,x,y,0.157) for X in x]
+    print("Интерполяционный многочлен Ньютона ", numpy.round(ynw, 5))
+
+    plt.plot(x, y, x, y, 'o', xnew, ynw)
+    plt.grid(True)
+    plt.show()
 
     #
-    # tmp = 2.5
-    # ans = interpolPolynom(1)
-    # print("Интерполяционный многочлен Лагранже в ", tmp, " =", float(interpolPolynom(tmp)))
+
+
     #
     #
     # tmp = 2.5
