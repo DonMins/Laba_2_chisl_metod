@@ -1,8 +1,8 @@
 import math as np
 import matplotlib.pyplot as plt
 import numpy
-import scipy as sp
 
+0
 Tatulated = []
 xarr = []
 
@@ -71,15 +71,39 @@ def interpolPolynomNewton(X,x,y,h):
 
     return y[0] + dy0*((X-x[0])/h) + dy_2*((X-x[0])*(X-x[1]))/(2*h**2)+dy_3*((X-x[0])*(X-x[1])*(X-x[2]))/(6*h**3)
 
-def linearSpline(X,x,y):
-   A = [[x[1]-x[0],0,0],[x[2]-x[0],x[2]-x[1],0],[x[3]-x[0],x[3]-x[1],x[3]-x[2]]]
-   c0 = (y[1]-y[0])/(x[1]-x[0])
-   c1 =((y[2]-y[0]) - ((x[2]-x[0])*c0))/(x[2]-x[1])
-   c2 =((y[3]-y[0]) - ((x[3]-x[0])*c0)-(x[3]-x[1])*c1)/(x[3]-x[2])
-   f = float(y[0]+c0*(X-x[0])+c1*(X-x[1])+c2*(X-x[2]))
-   return f
+def linearSpline(x,y):
+    lineSpline=[]
+    for i in range(3):
+        k = (y[i + 1] - y[i]) / (x[i + 1] - x[i])
+        b = y[i]
+        x1 = [x[i], x[i+1]]
+        y1 = [b + k * (x1[0] - x[i]), b + k * (x1[1] - x[i])]
+        if(i==0):
+            lineSpline.append(y1[0])
+            lineSpline.append(y1[1])
+            plt.plot(x1, y1, 'r')
+            plt.grid(True)
+        if(i==1):
+            plt.plot(x1, y1, 'r')
+        if(i==2):
+            lineSpline.append(y1[0])
+            lineSpline.append(y1[1])
+            plt.plot(x1, y1, 'r')
+    plt.show()
+    return lineSpline
 
-def parabolSpline(X,x,y):
+def parabolSpline(x,y):
+    i=0
+    a=(y[i]-y[i+1])/(2*x[i]-x[i]**2-x[i+1]**2)
+    b=-2*a*x[i]
+    c= y[i+1]-a*x[i+1]**2+2*a*x[i]
+    y1=a*x**2+b*x+c
+
+
+
+
+
+
     A = [ [0,2,0,0 ], [x[1]-x[0],(x[1]-x[0])**2,0,0],  [ x[2]-x[0] ,(x[2]-x[0])**2,(x[2]-x[1])**2,0],[ x[3]-x[0] ,(x[3]-x[0])**2,(x[3]-x[1])**2,(x[3]-x[2])**2]]
     b = numpy.zeros((4, 1))
     b[0][0]=0
@@ -105,33 +129,35 @@ def OutPutTab(M):
     print("--------------------------------")
     for i in range(M):
         print('|  x{0} = {1}   |   y{0} ={2}  |'.format(i,numpy.round(xarr[i], 5),
-                                      numpy.round(Tatulated[i], 5)))
+                                      numpy.round(Tatulated[i], 16)))
 
 if __name__ == "__main__":
-    tabalatedFunc(0,3,0.157)
-    OutPutTab(19)
-    x=xarr[10:14]
-    y=Tatulated[10:14]
+    tabalatedFunc(1.1,2,0.3)
+    OutPutTab(4)
+    x=xarr
+    y=Tatulated
 
     xnew =numpy.linspace(numpy.min(x), numpy.max(x), 4)
     ynew = [lagranz(x, y, i) for i in xnew]
-    print("Интерполяционный многочлен Лагранже ", numpy.round(ynew, 5))
+    print("Интерполяционный многочлен Лагранже ", numpy.round(ynew, 16))
     plt.plot(x, y, x,y,'o', xnew, ynew)
     plt.grid(True)
 
-    ynw = [interpolPolynomNewton(X,x,y,0.157) for X in x]
-    print("Интерполяционный многочлен Ньютона ", numpy.round(ynw, 5))
+    ynw = [interpolPolynomNewton(X,x,y,0.3) for X in x]
+    print("Интерполяционный многочлен Ньютона ", numpy.round(ynw, 16))
+    plt.figure(2)
 
-    yn2 = [linearSpline(X, x, y) for X in x]
-    print("Линейный сплайн ", numpy.round((yn2), 5))
 
-    plt.plot(x, yn2)
+
+print("Линейный сплайн ", numpy.round((linearSpline(x,y)), 16))
+
+
 
     # yn3 = [parabolSpline(X, x, y) for X in x]
     # print("Параболический сплайн ", numpy.round((yn3), 5))
     # plt.plot(x, y, x, y, 'o', xnew, yn3,xnew,yn2)
     # plt.grid(True)
-    plt.show()
+    #plt.show()
 
 
 
