@@ -2,8 +2,6 @@ import math as np
 import matplotlib.pyplot as plt
 import numpy
 
-Tatulated = []
-xarr = []
 
 def inputFunc(x): # исходная функция
     #return 5*x*np.pow((5 * np.pi +2*x),-1/4) # Таня
@@ -35,21 +33,9 @@ def step ():
         x_ = (x3 + x0) / 2
         print('x0 = {0} h = {1} R3={2}  x_ = {3}'.format(x0, h, R3, x_))
 
-def spline3(a,b):
-    x=a
-    h=b-a
-    S=[]
-    X1=[]
-    while x<b:
-        S.append ((((x-b)**2 * (2*(x-a)+h))*inputFunc(a))/h**3 +(((x-a)**2 * (2*(b-x)+h))*inputFunc(b))/h**3 +
-        ((x-b)**2 * (x-a) * Dx(a))/h**2 + ((x-a)**2* (x - b)* Dx(b))/h**2 )
-        X1.append(x)
-        x+=0.001
-
-    return X1,S
 
 
-def tabalatedFunc(a, b,h):  # границы [a,b], шаг
+def tabalatedFunc(a, b,h,xarr,Tatulated):  # границы [a,b], шаг
     x=a
     while x <= b:
         Tatulated.append(inputFunc(x))
@@ -57,7 +43,7 @@ def tabalatedFunc(a, b,h):  # границы [a,b], шаг
         x += h
         x = numpy.round(x,4)
 
-def plot():
+def plot(xarr,Tatulated):
     plt.figure("График какой то функции ")
     plt.plot(xarr, Tatulated)
     plt.grid()
@@ -97,6 +83,8 @@ def interpolPolynomNewton(X,x,y,h):
 
 def linearSpline(x,y):
     lineSpline=[]
+    ansX = []
+    ansY = []
     for i in range(3):
         k = (y[i + 1] - y[i]) / (x[i + 1] - x[i])
         b = y[i]
@@ -105,91 +93,100 @@ def linearSpline(x,y):
         if(i==0):
             lineSpline.append(y1[0])
             lineSpline.append(y1[1])
-            plt.plot(x1, y1, 'r')
-            plt.grid(True)
+            ansX.append(x1)
+            ansY.append(y1)
+
         if(i==1):
-            plt.plot(x1, y1, 'r')
+            ansX.append(x1)
+            ansY.append(y1)
         if(i==2):
             lineSpline.append(y1[0])
             lineSpline.append(y1[1])
-            plt.plot(x1, y1, 'r')
+            ansX.append(x1)
+            ansY.append(y1)
 
+    return lineSpline,ansX,ansY
 
-    plt.show()
-    return lineSpline
+def parabolSpline(x,y,h):
+    A = [[1, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 1, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 1, 0, 0],
+         [1, h, h ** 2, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 1, h, h ** 2, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 1, h, h ** 2],
+         [0, 1, 2 * h, 0, -1, 0, 0, 0, 0],
+         [0, 0, 0, 0, 1, 2 * h, 0, -1, 0],
+         [0, 0, 2, 0, 0, 0, 0, 0, 0]]
 
-def parabolSpline(x,a,b):
-    A = [[1,(x[1]-x[0]),(x[1]-x[0])**2,0,0,0,0,0,0],
-         [0,0,0,1,(x[2]-x[1]),(x[2]-x[1])**2,0,0,0],
-         [0,0,0,0,0,0,1,(x[3]-x[2]),(x[3]-x[2])**2],
-         [0,1,2*(x[1]-x[0]),0,-1,0,0,0,0],
-         [0,0,0,0,1,2*(x[2]-x[1]),0,-1,0],
-         [0,1,2*(a-x[0]),0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,1,2*(b-x[2])],
-         [0,0,1,0,0,-1,0,0,0],
-         [0,0,0,0,0,1,0,0,-1]]
+    b = [y[0], y[1],y[2],y[1], y[2], y[3], 0, 0, 0]
 
-    B=[inputFunc(x[1]),inputFunc(x[2]),inputFunc(x[3]),0,0,0,0,0,0]
-
-    ans= numpy.linalg.solve(A,B)
-    X=x[0]
-    P21=[]
-    P21x = []
-    while X<x[1]:
-        P21.append(ans[0]+ans[1]*(X-x[0])+ans[2]*(X-x[0])**2)
-        P21x.append(X)
-        X=X+0.01
-    plt.plot(P21x, P21)
-    plt.grid(True)
-    X = x[1]
-    P22 = []
-    P22x = []
-    while X<x[2]:
-        P22.append(ans[3]+ans[4]*(X-x[1])+ans[5]*(X-x[1])**2)
-        P22x.append(X)
-        X=X+0.01
-    plt.plot(P22x, P22)
-    X = x[2]
-    P23 = []
-    P23x = []
-    while X < x[3]:
-        P23.append(ans[6] + ans[7] * (X - x[2]) + ans[8] * (X - x[2]) ** 2)
-        P23x.append(X)
-        X = X + 0.01
-    plt.plot(P23x, P23)
-
-    plt.show()
-
-
-
-
-
-    # i=0
-    # a=(y[i]-y[i+1])/(2*x[i]-x[i]**2-x[i+1]**2)
-    # b=-2*a*x[i]
-    # c= y[i+1]-a*x[i+1]**2+2*a*x[i]
-    # y1=a*x**2+b*x+c
-    # A = [ [0,2,0,0 ], [x[1]-x[0],(x[1]-x[0])**2,0,0],  [ x[2]-x[0] ,(x[2]-x[0])**2,(x[2]-x[1])**2,0],[ x[3]-x[0] ,(x[3]-x[0])**2,(x[3]-x[1])**2,(x[3]-x[2])**2]]
-    # b = numpy.zeros((4, 1))
-    # b[0][0]=0
-    # for i in range(1,4):
-    #     b[i][0] = y[i] - y[0]
-    # ans = numpy.linalg.solve(A, b)
-    # f = float(y[0] + ans[0]*(X-x[0])+ans[1] * (X - x[0])**2 + ans[2] * (X - x[1])**2 + ans[3] * (X - x[2])**2)
-
-def cubSpline(X,x,y):
-    A = [ [x[1]-x[0],(x[1]-x[0])**3,0,0], [x[1]-x[0],(x[1]-x[0])**2,0,0],  [ x[2]-x[0] ,(x[2]-x[0])**2,(x[2]-x[1])**2,0],[ x[3]-x[0] ,(x[3]-x[0])**2,(x[3]-x[1])**2,(x[3]-x[2])**2]]
-    b = numpy.zeros((4, 1))
-    b[0][0]=0
-    for i in range(1,4):
-        b[i][0] = y[i] - y[0]
     ans = numpy.linalg.solve(A, b)
-    f = float(y[0] + ans[0]*(X-x[0])+ans[1] * (X - x[0])**2 + ans[2] * (X - x[1])**2 + ans[3] * (X - x[2])**2)
-    return f
+    X=x[0]
+    ansY = []
+    ansX = []
+
+    while X < x[1]:
+        ansY.append(ans[0]+ans[1]*(X-x[0])+ans[2]*(X-x[0])**2)
+        ansX.append(X)
+        X=X+0.001
+    X = x[1]
+
+    while X < x[2]:
+        ansY.append(ans[3]+ans[4]*(X-x[1])+ans[5]*(X-x[1])**2)
+        ansX.append(X)
+        X=X+0.001
+
+    X = x[2]
+    while X < x[3]:
+        ansY.append(ans[6] + ans[7] * (X - x[2]) + ans[8] * (X - x[2]) ** 2)
+        ansX.append(X)
+        X = X + 0.001
+
+    return ansX,ansY
+
+
+def cubSpline(x,y,h):
+    A = [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+         [1, h, h ** 2, h ** 3, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 1, h, h ** 2, h ** 3, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 1, h, h ** 2, h ** 3],
+         [0, 1, 2 * h, 3 * h ** 2, 0, -1, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 1, 2 * h, 3 * h ** 2, 0, -1, 0, 0],
+         [0, 0, 1, 3 * h, 0, 0, -1, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 1, 3 * h, 0, 0, -1, 0],
+         [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3*h]]
+
+    b = [y[0], y[1], y[2], y[1], y[2], y[3], 0, 0, 0,0,0,0]
+
+    ans = numpy.linalg.solve(A, b)
+    X = x[0]
+    ansY = []
+    ansX = []
+    while X < x[1]:
+        ansY.append(ans[0] + ans[1] * (X - x[0]) + ans[2] * (X - x[0]) ** 2 + ans[3]*(X-x[0])**3)
+        ansX.append(X)
+        X = X + 0.001
+    X = x[1]
+
+    while X < x[2]:
+        ansY.append(ans[4] + ans[5] * (X - x[1]) + ans[6] * (X - x[1]) ** 2 + ans[7] * (X - x[1])**3)
+        ansX.append(X)
+        X = X + 0.001
+
+    X = x[2]
+    while X < x[3]:
+        ansY.append(ans[8] + ans[9] * (X - x[2]) + ans[10] * (X - x[2]) ** 2 + ans[11] * (X - x[2]) ** 3)
+        ansX.append(X)
+        X = X + 0.001
+
+    return ansX,ansY
 
 
 
-def OutPutTab(M):
+def OutPutTab(M,xarr,Tatulated):
     print("       Табуляция функции")
     print("--------------------------------")
     for i in range(M):
@@ -197,35 +194,39 @@ def OutPutTab(M):
                                       numpy.round(Tatulated[i], 16)))
 
 if __name__ == "__main__":
-     tabalatedFunc(2.2,2.5,0.10)
-     OutPutTab(len(xarr))
-     x = xarr
-     y = Tatulated
+     h = (2.5-2.2)/3
+     x =[]
+     y=[]
+     tabalatedFunc(2.2,2.5,h,x,y)
+     OutPutTab(len(x),x,y)
 
      xnew = numpy.linspace(numpy.min(x), numpy.max(x), 4)
      ynew = [lagranz(x, y, i) for i in xnew]
      print("Интерполяционный многочлен Лагранже ", numpy.round(ynew, 16))
      plt.plot(xnew, ynew)
      plt.grid(True)
-     plt.show()
-     ynw = [interpolPolynomNewton(X, x, y, 0.1) for X in x]
-     print("Интерполяционный многочлен Ньютона ", numpy.round(ynw, 16))
-     print("Линейный сплайн ", numpy.round((linearSpline(x, y)), 16))
-     ans = spline3(xarr[0],xarr[1])
-     ans1 = spline3(xarr[1], xarr[2])
-     ans2 = spline3(xarr[2], xarr[3])
-     plt.figure("3 spline")
-     plt.plot(x,y,ans[0],ans[1],ans1[0],ans1[1],ans2[0],ans2[1])
-     plt.grid(True)
-     plt.show()
-     parabolSpline(xarr,1,2)
-#
 
-#     # yn3 = [parabolSpline(X, x, y) for X in x]
-#     # print("Параболический сплайн ", numpy.round((yn3), 5))
-#     # plt.plot(x, y, x, y, 'o', xnew, yn3,xnew,yn2)
-#     # plt.grid(True)
-#     #plt.show()
+     ynw = [interpolPolynomNewton(X, x, y,h) for X in x]
+     print("Интерполяционный многочлен Ньютона ", numpy.round(ynw, 16))
+     LinSp= linearSpline(x, y)
+     print("Линейный сплайн ", numpy.round(LinSp[0], 16))
+
+
+     plt.figure("Спалайны")
+     X_Y_parabol_sp = parabolSpline(x,y,h)
+     X_Y_cub_sp = cubSpline(x,y,h)
+     plt.grid(True)
+     x2=[]
+     y2=[]
+     tabalatedFunc(2.2, 2.5, 0.001,x2,y2)
+
+     leg1, leg2, leg3, leg4,leg5 = plt.plot(x2,y2, 'r', X_Y_cub_sp[0], X_Y_cub_sp[1], X_Y_parabol_sp[0],
+                                             X_Y_parabol_sp[1], LinSp[1],LinSp[2], 'g')
+     plt.legend((leg1, leg2, leg3, leg4),
+                ("Исходный график", "Кубический сплайн", "Параболический сплайн", "Линейный сплайн"))
+
+     plt.show()
+
 
 
 
