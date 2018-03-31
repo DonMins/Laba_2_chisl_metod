@@ -20,18 +20,19 @@ def MaxDx4Func(x): # функ-ция считает макс значение 4 
     return (1/(10*np.pi)) *( 4*(cot(x,3)*(-csc(x,1))-5*cot(x,1)*csc(x,3))+x*(5*csc(x,5)+cot(x,4)*csc(x,1)+
                               18*cot(x,2)*csc(x,3)))
 
-def step ():
-    x3 = 2.5
-    x0 = 1.5
+def step (a,b):
+    x3 = b
+    x0 = a
     h = (x3 - x0) / 3
     R3 = 1
     x_ = (x3 + x0) / 2
-    while (abs(R3) > 10 ** -4):
+    while (abs(R3) > 10 ** -3):
         R3 = 0.919 * x_ * (x_ - x0) * (x_ - x0 - h) * (x_ - x0 - 2 * h) * (x_ - x0 - 3 * h)
         x0 = x0 + 0.01
         h = (x3 - x0) / 3
         x_ = (x3 + x0) / 2
-        print('x0 = {0} h = {1} R3={2}  x_ = {3}'.format(x0, h, R3, x_))
+
+    return x0,h
 
 
 
@@ -118,7 +119,7 @@ def parabolSpline(x,y,h):
          [0, 0, 0, 0, 1, 2 * h, 0, -1, 0],
          [0, 0, 2, 0, 0, 0, 0, 0, 0]]
 
-    b = [y[0], y[1],y[2],y[1], y[2], y[3], 0, 0, 0]
+    b = [[y[0]], [y[1]],[y[2]],[y[1]], [y[2]], [y[3]], [0], [0], [0]]
 
     ans = numpy.linalg.solve(A, b)
     X=x[0]
@@ -159,7 +160,7 @@ def cubSpline(x,y,h):
          [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3*h]]
 
-    b = [y[0], y[1], y[2], y[1], y[2], y[3], 0, 0, 0,0,0,0]
+    b = [[y[0]], [y[1]], [y[2]], [y[1]], [y[2]], [y[3]], [0], [0], [0],[0],[0],[0]]
 
     ans = numpy.linalg.solve(A, b)
     X = x[0]
@@ -194,38 +195,75 @@ def OutPutTab(M,xarr,Tatulated):
                                       numpy.round(Tatulated[i], 16)))
 
 if __name__ == "__main__":
-     h = (2.5-2.2)/3
+     a=1.6
+     b= 2.6
+     temp = step(a, b)
+     a=temp[0]
+     h=temp[1]
+
      x =[]
      y=[]
-     tabalatedFunc(2.2,2.5,h,x,y)
+
+
+
+     tabalatedFunc(a,b,h,x,y)
+
      OutPutTab(len(x),x,y)
 
      xnew = numpy.linspace(numpy.min(x), numpy.max(x), 4)
      ynew = [lagranz(x, y, i) for i in xnew]
      print("Интерполяционный многочлен Лагранже ", numpy.round(ynew, 16))
-     plt.plot(xnew, ynew)
-     plt.grid(True)
 
      ynw = [interpolPolynomNewton(X, x, y,h) for X in x]
      print("Интерполяционный многочлен Ньютона ", numpy.round(ynw, 16))
      LinSp= linearSpline(x, y)
      print("Линейный сплайн ", numpy.round(LinSp[0], 16))
 
-
      plt.figure("Спалайны")
      X_Y_parabol_sp = parabolSpline(x,y,h)
      X_Y_cub_sp = cubSpline(x,y,h)
+
      plt.grid(True)
      x2=[]
      y2=[]
-     tabalatedFunc(2.2, 2.5, 0.001,x2,y2)
+     tabalatedFunc(a, b, 0.001,x2,y2)
 
-     leg1, leg2, leg3, leg4,leg5 = plt.plot(x2,y2, 'r', X_Y_cub_sp[0], X_Y_cub_sp[1], X_Y_parabol_sp[0],
-                                             X_Y_parabol_sp[1], LinSp[1],LinSp[2], 'g')
+     errCubX = []
+     errCubY = []
+     errPorabY = []
+
+     leg1, leg2, leg3, leg4,leg5 = plt.plot(x2,y2 ,'r', X_Y_cub_sp[0], X_Y_cub_sp[1],X_Y_parabol_sp[0],X_Y_parabol_sp[1], LinSp[1],LinSp[2], 'g-')
      plt.legend((leg1, leg2, leg3, leg4),
                 ("Исходный график", "Кубический сплайн", "Параболический сплайн", "Линейный сплайн"))
 
      plt.show()
+
+     errCubX=[]
+     errCubY=[]
+     errPorabY=[]
+
+     def xz():
+         err=[]
+         X=x[0]
+         while(X<x[3]):
+             err.append(inputFunc(X)-??тани что то пишет??)
+             X
+
+     for i in range(0,len(x2),5):
+         errCubY.append(abs(float(y2[i])-float(X_Y_cub_sp[1][i])))
+         errPorabY.append(abs(float(y2[i])-float(X_Y_parabol_sp[1][i])))
+
+         errCubX.append(x2[i])
+
+     plt.figure("Погрешность")
+     plt.grid(True)
+
+
+     plt.plot(errCubX,errCubY,'o',errCubX,errPorabY,'o')
+
+     plt.show()
+
+
 
 
 
