@@ -2,10 +2,9 @@ import math as np
 import matplotlib.pyplot as plt
 import numpy
 
-
 def inputFunc(x): # исходная функция
-    return 5*x*np.pow((5 * np.pi +2*x),-1/4) # Таня
-    #return (x / (10 * np.pi * np.sin(x)))
+   # return 5*x*np.pow((5 * np.pi +2*x),-1/4) # Таня
+    return (x / (10 * np.pi * np.sin(x)))
 
 def csc(t,i):
     return (1/np.sin(t))**i
@@ -14,15 +13,13 @@ def cot(t,i):
     return (1 / np.tan(t)) ** i
 
 def Dx (x):
-    return (5*(3*x+10*np.pi))/(2*np.pow((5*np.pi+2*x),5/4))
-    #return (csc(x,1)/(10*np.pi) - (x*cot(x,1)*csc(x,1))/10*(np.pi) )
-
-
+    #return (5*(3*x+10*np.pi))/(2*np.pow((5*np.pi+2*x),5/4))
+    return (csc(x,1)/(10*np.pi) - (x*cot(x,1)*csc(x,1))/10*(np.pi) )
 
 def MaxDx4Func(x): # функ-ция считает макс значение 4 производной
-    return (2935*x)/(16*np.pow((2*x +5*np.pi),17/4))-(225*x)/(2*np.pow((2*x +5*np.pi),13/4))
-    #return ((1/(10*np.pi)) *( 4*(cot(x,3)*(-csc(x,1))-5*cot(x,1)*csc(x,3))+x*(5*csc(x,5)+cot(x,4)*csc(x,1)+
-     #                         18*cot(x,2)*csc(x,3))))/24
+    #return (2935*x)/(16*np.pow((2*x +5*np.pi),17/4))-(225*x)/(2*np.pow((2*x +5*np.pi),13/4))
+    return ((1/(10*np.pi)) *( 4*(cot(x,3)*(-csc(x,1))-5*cot(x,1)*csc(x,3))+x*(5*csc(x,5)+cot(x,4)*csc(x,1)+
+                            18*cot(x,2)*csc(x,3))))/24
 
 def step (a,b):
     x3 = b
@@ -37,8 +34,6 @@ def step (a,b):
         x_ = (x3 + x0) / 2
 
     return x0,h
-
-
 
 def tabalatedFunc(a, b,h,xarr,Tatulated):  # границы [a,b], шаг
     x=a
@@ -189,6 +184,15 @@ def cubSpline(x,y,h):
 
     return ansX,ansY
 
+def errorLagranz(x,y):
+    err = []
+    xerr=[]
+    X = x[0]
+    while (X < x[3]):
+        err.append(abs(inputFunc(X) - lagranz(x, y, X)))
+        xerr.append(X)
+        X = X + 0.01
+    return xerr, err
 
 
 def OutPutTab(M,xarr,Tatulated):
@@ -199,13 +203,11 @@ def OutPutTab(M,xarr,Tatulated):
                                       numpy.round(Tatulated[i], 16)))
 
 if __name__ == "__main__":
-     a=1.5
+     a=1.6
      b= 2.6
      temp = step(a, b)
      a=temp[0]
      h=temp[1]
-
-
 
      x =[]
      y=[]
@@ -220,6 +222,12 @@ if __name__ == "__main__":
 
      ynw = [interpolPolynomNewton(X, x, y,h) for X in x]
      print("Интерполяционный многочлен Ньютона ", numpy.round(ynw, 16))
+
+     plt.figure("Многочлены")
+     leg1,leg2 = plt.plot(x,ynew,x,ynw)
+     plt.grid(True)
+     plt.legend((leg1, leg2),("Многочлен Лагранже", "Многочлен Ньютона"))
+
      LinSp= linearSpline(x, y)
      print("Линейный сплайн ", numpy.round(LinSp[0], 16))
 
@@ -240,31 +248,23 @@ if __name__ == "__main__":
      plt.legend((leg1, leg2, leg3, leg4),
                 ("Исходный график", "Кубический сплайн", "Параболический сплайн", "Линейный сплайн"))
 
-     plt.show()
-
      errCubX=[]
      errCubY=[]
      errPorabY=[]
 
-     def xz():
-         err=[]
-         X=x[0]
-         while(X<x[3]):
-
-             X
-
      for i in range(0,len(x2),5):
          errCubY.append(abs(float(y2[i])-float(X_Y_cub_sp[1][i])))
          errPorabY.append(abs(float(y2[i])-float(X_Y_parabol_sp[1][i])))
-
          errCubX.append(x2[i])
+
+     errLagr = errorLagranz(x,y)
+
 
      plt.figure("Погрешность")
      plt.grid(True)
 
-
-     plt.plot(errCubX,errCubY,'o',errCubX,errPorabY,'o')
-
+     leg1,leg2,leg3 = plt.plot(errLagr[0],errLagr[1],'o',errCubX,errCubY,'o',errCubX,errPorabY,'o')
+     plt.legend((leg1, leg2, leg3),("Поргрешность многч. Лагранже", "Погрешность куб. сплайн", "Погрешность парабол. сплайн"))
      plt.show()
 
 
