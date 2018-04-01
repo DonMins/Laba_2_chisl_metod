@@ -4,8 +4,8 @@ import numpy
 
 
 def inputFunc(x): # исходная функция
-    #return 5*x*np.pow((5 * np.pi +2*x),-1/4) # Таня
-    return (x / (10 * np.pi * np.sin(x)))
+    return 5*x*np.pow((5 * np.pi +2*x),-1/4) # Таня
+    #return (x / (10 * np.pi * np.sin(x)))
 
 def csc(t,i):
     return (1/np.sin(t))**i
@@ -14,11 +14,15 @@ def cot(t,i):
     return (1 / np.tan(t)) ** i
 
 def Dx (x):
-    return (csc(x,1)/(10*np.pi) - (x*cot(x,1)*csc(x,1))/10*(np.pi) )
+    return (5*(3*x+10*np.pi))/(2*np.pow((5*np.pi+2*x),5/4))
+    #return (csc(x,1)/(10*np.pi) - (x*cot(x,1)*csc(x,1))/10*(np.pi) )
+
+
 
 def MaxDx4Func(x): # функ-ция считает макс значение 4 производной
-    return (1/(10*np.pi)) *( 4*(cot(x,3)*(-csc(x,1))-5*cot(x,1)*csc(x,3))+x*(5*csc(x,5)+cot(x,4)*csc(x,1)+
-                              18*cot(x,2)*csc(x,3)))
+    return (2935*x)/(16*np.pow((2*x +5*np.pi),17/4))-(225*x)/(2*np.pow((2*x +5*np.pi),13/4))
+    #return ((1/(10*np.pi)) *( 4*(cot(x,3)*(-csc(x,1))-5*cot(x,1)*csc(x,3))+x*(5*csc(x,5)+cot(x,4)*csc(x,1)+
+     #                         18*cot(x,2)*csc(x,3))))/24
 
 def step (a,b):
     x3 = b
@@ -27,7 +31,7 @@ def step (a,b):
     R3 = 1
     x_ = (x3 + x0) / 2
     while (abs(R3) > 10 ** -3):
-        R3 = 0.919 * x_ * (x_ - x0) * (x_ - x0 - h) * (x_ - x0 - 2 * h) * (x_ - x0 - 3 * h)
+        R3 = MaxDx4Func(b) * x_ * (x_ - x0) * (x_ - x0 - h) * (x_ - x0 - 2 * h) * (x_ - x0 - 3 * h)
         x0 = x0 + 0.01
         h = (x3 - x0) / 3
         x_ = (x3 + x0) / 2
@@ -195,16 +199,16 @@ def OutPutTab(M,xarr,Tatulated):
                                       numpy.round(Tatulated[i], 16)))
 
 if __name__ == "__main__":
-     a=1.6
+     a=1.5
      b= 2.6
      temp = step(a, b)
      a=temp[0]
      h=temp[1]
 
+
+
      x =[]
      y=[]
-
-
 
      tabalatedFunc(a,b,h,x,y)
 
@@ -246,7 +250,7 @@ if __name__ == "__main__":
          err=[]
          X=x[0]
          while(X<x[3]):
-             err.append(inputFunc(X)-??тани что то пишет??)
+
              X
 
      for i in range(0,len(x2),5):
@@ -262,6 +266,7 @@ if __name__ == "__main__":
      plt.plot(errCubX,errCubY,'o',errCubX,errPorabY,'o')
 
      plt.show()
+
 
 
 
