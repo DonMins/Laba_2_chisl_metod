@@ -22,16 +22,31 @@ def MaxDx4Func(x): # функ-ция считает макс значение 4 
                             18*cot(x,2)*csc(x,3))))/24
 
 def step (a,b):
+    def maxx(x0, h, b):
+        max = 0
+        x_ = x0
+        ans=0
+        while (x_ <= b):
+            tmp = abs(x_ * (x_ - x0) * (x_ - x0 - h) * (x_ - x0 - 2 * h) * (x_ - x0 - 3 * h))
+            if (max < tmp):
+                max = tmp
+                ans = x_
+            x_ += 0.001
+        return ans
+
     x3 = b
     x0 = a
     h = (x3 - x0) / 3
     R3 = 1
-    x_ = (x3 + x0) / 2
+    x_ = maxx(x0,h,b)
+    max =MaxDx4Func(b)
+
     while (abs(R3) > 10 ** -3):
-        R3 = MaxDx4Func(b) * x_ * (x_ - x0) * (x_ - x0 - h) * (x_ - x0 - 2 * h) * (x_ - x0 - 3 * h)
+        R3 =  (max* x_ * (x_ - x0) * (x_ - x0 - h) * (x_ - x0 - 2 * h) * (x_ - x0 - 3 * h))
         x0 = x0 + 0.01
         h = (x3 - x0) / 3
-        x_ = (x3 + x0) / 2
+        x_ = maxx(x0,h,b)
+        print("x0 = ",x0, "h=",h,"R",R3,"max = ", x_ )
 
     return x0,h
 
@@ -203,12 +218,11 @@ def OutPutTab(M,xarr,Tatulated):
                                       numpy.round(Tatulated[i], 16)))
 
 if __name__ == "__main__":
-     a=1.6
-     b= 2.6
+     a=1
+     b= 2.5
      temp = step(a, b)
      a=temp[0]
      h=temp[1]
-
      x =[]
      y=[]
 
@@ -224,9 +238,9 @@ if __name__ == "__main__":
      print("Интерполяционный многочлен Ньютона ", numpy.round(ynw, 16))
 
      plt.figure("Многочлены")
-     leg1,leg2 = plt.plot(x,ynew,x,ynw)
+     leg1,leg2,leg3 = plt.plot(x,y,x,ynew,x,ynw)
      plt.grid(True)
-     plt.legend((leg1, leg2),("Многочлен Лагранже", "Многочлен Ньютона"))
+     plt.legend((leg1, leg2,leg3),("Исходный график","Многочлен Лагранже", "Многочлен Ньютона"))
 
      LinSp= linearSpline(x, y)
      print("Линейный сплайн ", numpy.round(LinSp[0], 16))
@@ -252,7 +266,7 @@ if __name__ == "__main__":
      errCubY=[]
      errPorabY=[]
 
-     for i in range(0,len(x2),5):
+     for i in range(0,len(x2),20):
          errCubY.append(abs(float(y2[i])-float(X_Y_cub_sp[1][i])))
          errPorabY.append(abs(float(y2[i])-float(X_Y_parabol_sp[1][i])))
          errCubX.append(x2[i])
