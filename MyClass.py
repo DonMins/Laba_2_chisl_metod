@@ -288,6 +288,7 @@ if __name__ == "__main__":
      errNyt = errorNyton(x,y,h)
      print(errNyt[1])
      print(errLagr[1])
+     
 
      plt.figure("Погрешность 1 ")
      plt.grid(True)
