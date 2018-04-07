@@ -46,7 +46,6 @@ def step (a,b):
         x0 = x0 + 0.01
         h = (x3 - x0) / 3
         x_ = maxx(x0,h,b)
-        print("x0 = ",x0, "h=",h,"R",R3,"max = ", x_ )
 
     return x0,h
 
@@ -96,31 +95,22 @@ def interpolPolynomNewton(X,x,y,h):
 
     return y[0] + dy0*((X-x[0])/h) + dy_2*((X-x[0])*(X-x[1]))/(2*h**2)+dy_3*((X-x[0])*(X-x[1])*(X-x[2]))/(6*h**3)
 
-def linearSpline(x,y):
-    lineSpline=[]
+def linearSpline(x,y,n):
     ansX = []
     ansY = []
-    for i in range(3):
+    for i in range(n):
         k = (y[i + 1] - y[i]) / (x[i + 1] - x[i])
         b = y[i]
         x1 = [x[i], x[i+1]]
         y1 = [b + k * (x1[0] - x[i]), b + k * (x1[1] - x[i])]
-        if(i==0):
-            lineSpline.append(y1[0])
-            lineSpline.append(y1[1])
-            ansX.append(x1)
-            ansY.append(y1)
+        ansX.append(x1[0])
+        ansY.append(y1[0])
+        if (i==(n-1)):
+            ansX.append(x1[1])
+            ansY.append(y1[1])
 
-        if(i==1):
-            ansX.append(x1)
-            ansY.append(y1)
-        if(i==2):
-            lineSpline.append(y1[0])
-            lineSpline.append(y1[1])
-            ansX.append(x1)
-            ansY.append(y1)
 
-    return lineSpline,ansX,ansY
+    return ansX,ansY
 
 def parabolSpline(x,y,h):
     A = [[1, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -209,6 +199,26 @@ def errorLagranz(x,y):
         X = X + 0.01
     return xerr, err
 
+def errorNyton(x,y,h):
+    err = []
+    xerr=[]
+
+    X = x[0]
+    while (X <= x[3]):
+        err.append(abs(inputFunc(X)- interpolPolynomNewton(X, x, y,h)))
+        xerr.append(X)
+        X = X + 0.01
+
+    return xerr, err
+
+def errorSplLin(x2,y2):
+    err = []
+    xerr=[]
+    LinSp = linearSpline(x, y, 300)
+    for i in range(0, len(x2), 5):
+        err.append(abs(float(y2[i]) - float(LinSp[i])))
+        xerr.append(x2)
+    return xerr, err
 
 def OutPutTab(M,xarr,Tatulated):
     print("       Табуляция функции")
@@ -218,7 +228,7 @@ def OutPutTab(M,xarr,Tatulated):
                                       numpy.round(Tatulated[i], 16)))
 
 if __name__ == "__main__":
-     a=1
+     a=0.1
      b= 2.5
      temp = step(a, b)
      a=temp[0]
@@ -226,7 +236,11 @@ if __name__ == "__main__":
      x =[]
      y=[]
 
+     x2 = []
+     y2 = []
+
      tabalatedFunc(a,b,h,x,y)
+     tabalatedFunc(a, b, 0.001, x2, y2)
 
      OutPutTab(len(x),x,y)
 
@@ -238,27 +252,26 @@ if __name__ == "__main__":
      print("Интерполяционный многочлен Ньютона ", numpy.round(ynw, 16))
 
      plt.figure("Многочлены")
-     leg1,leg2,leg3 = plt.plot(x,y,x,ynew,x,ynw)
+     leg1,leg2,leg3 = plt.plot(x2,y2,x,ynew,x,ynw)
      plt.grid(True)
      plt.legend((leg1, leg2,leg3),("Исходный график","Многочлен Лагранже", "Многочлен Ньютона"))
 
-     LinSp= linearSpline(x, y)
-     print("Линейный сплайн ", numpy.round(LinSp[0], 16))
+     LinSp= linearSpline(x, y,3)
+     print("Линейный сплайн ", numpy.round(LinSp[1], 16))
 
-     plt.figure("Спалайны")
+     plt.figure("Сплайны")
      X_Y_parabol_sp = parabolSpline(x,y,h)
      X_Y_cub_sp = cubSpline(x,y,h)
 
      plt.grid(True)
-     x2=[]
-     y2=[]
-     tabalatedFunc(a, b, 0.001,x2,y2)
+
+
 
      errCubX = []
      errCubY = []
      errPorabY = []
 
-     leg1, leg2, leg3, leg4,leg5 = plt.plot(x2,y2 ,'r', X_Y_cub_sp[0], X_Y_cub_sp[1],X_Y_parabol_sp[0],X_Y_parabol_sp[1], LinSp[1],LinSp[2], 'g-')
+     leg1, leg2, leg3, leg4 = plt.plot(x2,y2 ,'r', X_Y_cub_sp[0], X_Y_cub_sp[1],X_Y_parabol_sp[0],X_Y_parabol_sp[1], LinSp[0],LinSp[1], 'g-')
      plt.legend((leg1, leg2, leg3, leg4),
                 ("Исходный график", "Кубический сплайн", "Параболический сплайн", "Линейный сплайн"))
 
@@ -266,19 +279,25 @@ if __name__ == "__main__":
      errCubY=[]
      errPorabY=[]
 
-     for i in range(0,len(x2),20):
+     for i in range(0,len(x2),10):
          errCubY.append(abs(float(y2[i])-float(X_Y_cub_sp[1][i])))
          errPorabY.append(abs(float(y2[i])-float(X_Y_parabol_sp[1][i])))
          errCubX.append(x2[i])
 
      errLagr = errorLagranz(x,y)
+     errNyt = errorNyton(x,y,h)
+     print(errNyt[1])
+     print(errLagr[1])
 
-
-     plt.figure("Погрешность")
+     plt.figure("Погрешность 1 ")
      plt.grid(True)
+     leg1,leg2 = plt.plot(errLagr[0],errLagr[1],'o',errNyt[0],errNyt[1],'o')
+     plt.legend((leg1,leg2), ("Погрешность мет.Лагранжа","Погрешность мат.Ньютона"))
 
-     leg1,leg2,leg3 = plt.plot(errLagr[0],errLagr[1],'o',errCubX,errCubY,'o',errCubX,errPorabY,'o')
-     plt.legend((leg1, leg2, leg3),("Поргрешность многч. Лагранже", "Погрешность куб. сплайн", "Погрешность парабол. сплайн"))
+     plt.figure("Погрешность 2 ")
+     plt.grid(True)
+     leg1,leg2 = plt.plot(errCubX,errCubY,'o',errCubX,errPorabY,'o')
+     plt.legend((leg1, leg2),("Погрешность куб. сплайн", "Погрешность парабол. сплайн"))
      plt.show()
 
 
