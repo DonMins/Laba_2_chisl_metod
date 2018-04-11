@@ -12,6 +12,28 @@ def csc(t,i): # косеканс
 def cot(t,i): # котангенс
     return (1 / np.tan(t)) ** i
 
+def plotDx_4(x,b,xmin,xmax):
+    xar= []
+    yar = []
+    y1 = [0,35]
+    x1 = [xmin,xmin]
+    x2 = [xmax,xmax]
+    while(x<=b):
+        yar.append((1/(10*np.pi)) *( 4*(cot(x,3)*(-csc(x,1))-5*cot(x,1)*csc(x,3))+x*(5*csc(x,5)+cot(x,4)*csc(x,1)+
+                            18*cot(x,2)*csc(x,3))))
+        xar.append(x)
+        x+=0.01
+    ma = 24*MaxDx4Func(xmax)
+    plt.figure("График 4 производной")
+    plt.grid(True)
+    leg1,leg2,leg3 = plt.plot(xar,yar,x1,y1 , x2 ,y1)
+    plt.legend((leg1, leg2, leg3), ("Исходный график", "a", "b"))
+    plt.plot(xmax, ma ,'o')
+
+    print("Max 4 Dx = " , ma )
+
+
+
 def MaxDx4Func(x): # функ-ция считает макс значение 4 производной
 
     return ((1/(10*np.pi)) *( 4*(cot(x,3)*(-csc(x,1))-5*cot(x,1)*csc(x,3))+x*(5*csc(x,5)+cot(x,4)*csc(x,1)+
@@ -37,16 +59,18 @@ def step (a,b): # находим шаг (параметры - какой ниб�
     x_ = maxx(x0,h,b) # max x_ для |w_n+1|
     max =MaxDx4Func(b) # само max значени |w_n+1|
 
-    while (abs(R3) > 10 ** -3):
+    while (abs(R3/inputFunc(x_)) > 10 ** -3):
         R3 =  (max* x_ * (x_ - x0) * (x_ - x0 - h) * (x_ - x0 - 2 * h) * (x_ - x0 - 3 * h))
         x0 = x0 + 0.01
         h = (x3 - x0) / 3
         x_ = maxx(x0,h,b)
+        print("x0 = ",x0,"R3 = ",R3/inputFunc(x_),"h  =", h)
 
     return x0,h
 
 def tabalatedFunc(a, b,h,xarr,Tatulated): #Табуляция, параметры (суженые границы [a,b], шаг,массив  x и у для сохранения )
     x=a
+
     while x <= b:
         Tatulated.append(inputFunc(x))
         xarr.append(x)
@@ -234,6 +258,9 @@ if __name__ == "__main__":
 
      x = [] # табул. массив х с шагом h
      y = []  # табул.массив y с шагом h
+
+
+     plotDx_4(0.1,2.55,a,b)
 
      x2 = [] # табул. массив х с шагом для оценки погрешности
      y2 = [] # табул. массив у с шагом для оценки погрешности
