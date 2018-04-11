@@ -47,14 +47,15 @@ def step (a,b): # находим шаг (параметры - какой ниб�
         return  abs(x_ * (x_ - x0) * (x_ - x0 - h) * (x_ - x0 - 2 * h) * (x_ - x0 - 3 * h))
 
     def maxW_n_1(a, b,h):# метод половинного деления для поиска максимума
-        while (abs(b - a) >= 2 * 0.001):
-            x1 = ((a + b) - 0.001) / 2
-            x2 = ((a + b) + 0.001) / 2
+        PHI = (np.sqrt(5) + 1) / 2
+        while (abs(b - a) >= 2 * 0.00001):
+            x2 = a + (b - a) / PHI
+            x1 = b - (b - a) / PHI
 
-            if (maxfunc(x1,x0,h) <= maxfunc(x2,x0,h)):
+            if (abs(maxfunc(x1,x0,h)) <= (abs(maxfunc(x2,x0,h)))):
                 a = x1
             else:
-                if (maxfunc(x1,x0,h) > maxfunc(x2,x0,h)):
+                if (abs((maxfunc(x1,x0,h))) > (abs(maxfunc(x2,x0,h)))):
                     b = x2
         return ((a + b) / 2)
 
