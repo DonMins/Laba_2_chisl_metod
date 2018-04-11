@@ -39,31 +39,37 @@ def MaxDx4Func(x): # функ-ция считает макс значение 4 
     return ((1/(10*np.pi)) *( 4*(cot(x,3)*(-csc(x,1))-5*cot(x,1)*csc(x,3))+x*(5*csc(x,5)+cot(x,4)*csc(x,1)+
                             18*cot(x,2)*csc(x,3))))/24
 
+
+
 def step (a,b): # находим шаг (параметры - какой нибудь начальный отрезок)
-    def maxx(x0, h, b):# считаем максимальны x_ для |w_n+1| в лоб
-        max = 0
-        x_ = x0
-        ans=0
-        while (x_<= b):
-            tmp = abs(x_ * (x_ - x0) * (x_ - x0 - h) * (x_ - x0 - 2 * h) * (x_ - x0 - 3 * h))
-            if (max < tmp):
-                max = tmp
-                ans = x_
-            x_ += 0.001
-        return ans
+
+    def maxfunc(x_,x0,h): # |w_n+1|
+        return  abs(x_ * (x_ - x0) * (x_ - x0 - h) * (x_ - x0 - 2 * h) * (x_ - x0 - 3 * h))
+
+    def maxW_n_1(a, b,h):# метод половинного деления для поиска максимума
+        while (abs(b - a) >= 2 * 0.001):
+            x1 = ((a + b) - 0.001) / 2
+            x2 = ((a + b) + 0.001) / 2
+
+            if (maxfunc(x1,x0,h) <= maxfunc(x2,x0,h)):
+                a = x1
+            else:
+                if (maxfunc(x1,x0,h) > maxfunc(x2,x0,h)):
+                    b = x2
+        return ((a + b) / 2)
 
     x3 = b # правая граница
     x0 = a  # левая граница
     h = (x3 - x0) / 3  # шаг
     R3 = 1 # погрешность
-    x_ = maxx(x0,h,b) # max x_ для |w_n+1|
+    x_ = maxW_n_1(x0,b,h) # max x_ для |w_n+1|
     max =MaxDx4Func(b) # само max значени |w_n+1|
 
     while (abs(R3/inputFunc(x_)) > 10 ** -3):
         R3 =  (max* x_ * (x_ - x0) * (x_ - x0 - h) * (x_ - x0 - 2 * h) * (x_ - x0 - 3 * h))
         x0 = x0 + 0.01
         h = (x3 - x0) / 3
-        x_ = maxx(x0,h,b)
+        x_ = maxW_n_1(x0, b,h)
         print("x0 = ",x0,"R3 = ",R3/inputFunc(x_),"h  =", h)
 
     return x0,h
@@ -298,7 +304,6 @@ if __name__ == "__main__":
      plt.grid(True)
 
 
-
      leg1, leg2, leg3, leg4 = plt.plot(x2,y2 ,'r', X_Y_cub_sp[0], X_Y_cub_sp[1],X_Y_parabol_sp[0],X_Y_parabol_sp[1], LinSp[0],LinSp[1], 'g-')
      plt.legend((leg1, leg2, leg3, leg4),
                 ("Исходный график", "Кубический сплайн", "Параболический сплайн", "Линейный сплайн"))
@@ -334,11 +339,3 @@ if __name__ == "__main__":
      leg1,leg2,leg3 = plt.plot(errCubX,errCubY,'o',errCubX,errPorabY,'o',errLinX,errLin,'o')
      plt.legend((leg1, leg2,leg3),("Погрешность куб. сплайн", "Погрешность парабол. сплайн","Погрешность лин.сплайн"))
      plt.show()
-
-
-
-
-
-
-
-
