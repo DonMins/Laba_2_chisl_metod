@@ -28,7 +28,7 @@ def plotDx_4(x,b,xmin,xmax):
     plt.figure("График 4 производной")
     plt.grid(True)
     leg1,leg2,leg3 = plt.plot(xar,yar,x1,y1 , x2 ,y1)
-    plt.legend((leg1, leg2, leg3), ("Исходный график", "a", "b"))
+    plt.legend((leg1, leg2, leg3), ("4 производная", "a", "b"))
     plt.plot(xmax, ma ,'o')
 
     print("Max 4 Dx = " , ma )
@@ -240,7 +240,7 @@ def errorNyton(x,y,h):
     while (X <= x[3]):
         err.append(abs(inputFunc(X)- interpolPolynomNewton(X, x, y,h)))
         xerr.append(X)
-        X = X + 0.002
+        X = X + 0.007
 
     return xerr, err
 
@@ -298,7 +298,7 @@ if __name__ == "__main__":
      #print("Интерполяционный многочлен Ньютона ", numpy.round(ynw, 16))
 
      plt.figure("Многочлены")
-     leg1,leg2,leg3 = plt.plot(x,y,ggx,ylag,ggx,ynew)
+     leg1,leg2,leg3 = plt.plot(x2,y2,ggx,ylag,ggx,ynew)
      plt.grid(True)
      plt.legend((leg1,leg2,leg3),("Исходный график","Многочлен Лагранже","Многочлен Ньютона"))
 
@@ -335,10 +335,6 @@ if __name__ == "__main__":
      for i in range(0, len(x2), 3): # чтобы линейный сплайн не слипался с парабол - возьмем лин через 3
           errLin.append(abs(float(y2[i]) - float(X_Y_lin_sp[1][i])))
           errLinX.append(x2[i])
-     print(len(x2))
-     print(len(X_Y_lin_sp[1]))
-     print(len(X_Y_cub_sp[1]))
-     print(len(X_Y_parabol_sp[1]))
 
 # погрешности лагранже и ньютна
      errLagr = errorLagranz(x,y)
