@@ -36,8 +36,8 @@ def plotDx_4(x,b,xmin,xmax):
 
 def MaxDx4Func(x): # функ-ция считает макс значение 4 производной
 
-    return ((1/(10*np.pi)) *( 4*(cot(x,3)*(-csc(x,1))-5*cot(x,1)*csc(x,3))+x*(5*csc(x,5)+cot(x,4)*csc(x,1)+
-                            18*cot(x,2)*csc(x,3))))/24
+    return abs(((1/(10*np.pi)) *( 4*(cot(x,3)*(-csc(x,1))-5*cot(x,1)*csc(x,3))+x*(5*csc(x,5)+cot(x,4)*csc(x,1)+
+                            18*cot(x,2)*csc(x,3)))))/24
 
 
 def step (a,b): # находим шаг (параметры - какой нибудь начальный отрезок)
